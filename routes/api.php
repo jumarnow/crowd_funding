@@ -13,6 +13,22 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth',
+    'namespace' => 'Auth'
+], function(){
+    Route::post('register', 'RegisterController');
+    Route::post('regenerate', 'RegenerateOtpCodeController');
+    Route::post('verification', 'VerificationController');
+    Route::post('update-password', 'UpdatePasswordController');
+    Route::post('login', 'LoginController');
+
+});
+
+Route::group([
+    'middleware' => ['api', 'email_verified', 'auth:api'],
+], function(){
+    Route::get('profile/show', 'ProfileController@show');
+    Route::post('profile/update', 'ProfileController@update');
 });

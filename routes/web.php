@@ -11,18 +11,18 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Auth::routes();
+// Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/route-1', function(){
-    return 'masuk 1';
-})->middleware(['auth', 'email_verified']);
+// Route::get('/route-1', function(){
+//     return 'masuk 1';
+// })->middleware(['auth', 'email_verified']);
 
-Route::get('/route-2', function(){
-    return 'masuk 2';
-})->middleware(['auth', 'email_verified', 'admin']);
+// Route::get('/route-2', function(){
+//     return 'masuk 2';
+// })->middleware(['auth', 'email_verified', 'admin']);

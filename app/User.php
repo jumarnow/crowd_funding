@@ -2,14 +2,27 @@
 
 namespace App;
 
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Traits\UsesUuid;
+use App\OtpCode;
+use Carbon\Carbon;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, UsesUuid;
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 
     protected function get_user_role_id(){
         $role = \App\Role::where('name', 'user')->first();
@@ -22,6 +35,10 @@ class User extends Authenticatable
         static::creating(function($model){
             $model->role_id = $model->get_user_role_id();
         });
+
+        static::creating(function($model){
+            $model->generate_otp_code();
+        });
     }
 
     /**
@@ -30,7 +47,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'photo_profile',
     ];
 
     /**
@@ -56,5 +73,20 @@ class User extends Authenticatable
             return false;
         }
         return true;
+    }
+
+    public function generate_otp_code(){
+        do {
+            $random = mt_rand(100000,999999);
+            $check = OtpCode::where('otp', $random)->first();
+        } while($check);
+
+        $now = Carbon::now();
+    
+        //create otp code
+        $otp_code = OtpCode::updateOrCreate(
+            ['user_id' => $this->id],
+            ['otp' => $random, 'valid_until' => $now->addMinutes(5)]
+        );
     }
 }
