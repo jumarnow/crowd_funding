@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Events\UserRegistered;
 use App\User;
 
 class RegisterController extends Controller
@@ -24,6 +25,9 @@ class RegisterController extends Controller
 
         $data_request = $request->all();
         $user = User::create($data_request);
+
+        event(new UserRegistered($user, 'register'));
+
 
         $data['user'] = $user;
 
